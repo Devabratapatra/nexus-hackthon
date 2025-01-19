@@ -1,11 +1,366 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Responsive Rich Text Editor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            overflow-y: auto;
+            transition: transform 0.3s ease-in-out;
+            /* transform: translateX(-100%); */
+            position: fixed;
+            z-index: 10;
+            height: 100%;
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .sidebar h2 {
+            margin-bottom: 20px;
+        }
+
+        .sidebar button,
+        .sidebar input[type="file"] {
+            display: block;
+            width: 100%;
+            background-color: #34495e;
+            color: white;
+            border: none;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .sidebar button:hover,
+        .sidebar input[type="file"]:hover {
+            background-color: #1abc9c;
+        }
+
+        .sidebar input[type="file"] {
+            text-align: center;
+        }
+
+        .sidebar input[type="file"]::-webkit-file-upload-button {
+            background-color: #1abc9c;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .hamburger {
+            display: none;
+            background-color: #1abc9c;
+            color: white;
+            border: none;
+            padding: 10px;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 20;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            margin-left: 250px;
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        .content.collapsed {
+            margin-left: 0;
+        }
+
+        .editor {
+            border: 1px solid #ccc;
+            min-height: 600px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .editor img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 10px 0;
+        }
+
+        .selected {
+            border: 2px solid #1abc9c;
+        }
+
+        .post-blog-button {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: #1abc9c;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .post-blog-button:hover {
+            background-color: #16a085;
+        }
+
+        .post-blog-button i {
+            color: white;
+            font-size: 24px;
+        }
+
+        @media screen and (max-width: 768px) {
+
+            .main-container {
+                width: 112vw !important;
+                height: 100vh;
+            }
+
+            .navbar {
+                justify-content: center;
+            }
+
+            .navbar-main {
+                gap: 10px !important;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .content {
+                margin-left: 0;
+            }
+
+
+            .hamburger {
+                display: block;
+                background-color: transparent;
+                color: rgb(0, 0, 0);
+                border: 3px solid rgb(0, 0, 0);
+                padding: 10px;
+                position: fixed;
+                top: 55px;
+                left: -4px;
+                z-index: 20;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 18px;
+            }
+        }
+    </style>
+    <!-- Add Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body style="background-color: black;">
-    hello !
+
+<body>
+    <div style="height: 100vh; width: 100%;" class="main-container">
+
+        <nav style="display: flex; justify-content: space-between; background-color: #2c3e50;" class="navbar">
+            <img src="/assets/Logo.png" height="70" style="margin-left: 5px;" alt="">
+            <ol style="display: flex; align-items: center; justify-content: center; padding: 25px; list-style: none; gap: 60px;"
+                class="navbar-main">
+                <li><a style="text-decoration: none; color: white;" href="#">Home</a></li>
+                <li><a style="text-decoration: none; color: white;" href="#">About</a></li>
+                <li><a style="text-decoration: none; color: white;" href="#">Features</a></li>
+                <li><a style="text-decoration: none; color: white;" href="#">contact-us</a></li>
+            </ol>
+        </nav>
+        <!-- Hamburger Menu -->
+        <button class="hamburger" onclick="toggleSidebar()">☰</button>
+
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <button onclick="formatText('bold')">Bold</button>
+            <button onclick="formatText('italic')">Italic</button>
+            <button onclick="formatText('underline')">Underline</button>
+            <button onclick="formatText('insertOrderedList')">Ordered List</button>
+            <button onclick="formatText('insertUnorderedList')">Unordered List</button>
+            <button onclick="alignText('left')">Align Left</button>
+            <button onclick="alignText('center')">Align Center</button>
+            <button onclick="alignText('right')">Align Right</button>
+            <button onclick="increaseFontSize()">Increase Font Size</button>
+            <button onclick="decreaseFontSize()">Decrease Font Size</button>
+            <input type="file" id="image-upload" accept="image/*" multiple onchange="handleImageUpload(event)">
+            <button onclick="resizeImage('increase')">Increase Image Size</button>
+            <button onclick="resizeImage('decrease')">Decrease Image Size</button>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content" id="content">
+
+            <div id="editor" class="editor" contenteditable="true" onclick="selectImage(event)">
+                Start typing here...
+            </div>
+            <!-- Post Blog Button -->
+            <button class="post-blog-button" onclick="postBlog()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let fontSize = 16; // Default font size
+        const maxFontSize = 36; // Maximum font size
+        const minFontSize = 10; // Minimum font size
+        let selectedImage = null; // Track the currently selected image
+
+        const sidebar = document.getElementById('sidebar');
+        const content = document.getElementById('content');
+
+        // Toggle Sidebar for Responsive Design
+        function toggleSidebar() {
+            sidebar.classList.toggle('open');
+            content.classList.toggle('collapsed');
+        }
+
+        // Functions for text formatting
+        function formatText(command) {
+            document.execCommand(command, false, null);
+        }
+
+        function alignText(align) {
+            document.execCommand('justify' + align, false, null);
+        }
+
+        function increaseFontSize() {
+            if (fontSize < maxFontSize) {
+                fontSize += 2;
+                document.getElementById('editor').style.fontSize = fontSize + 'px';
+            } else {
+                alert('Maximum font size reached.');
+            }
+        }
+
+        function decreaseFontSize() {
+            if (fontSize > minFontSize) {
+                fontSize -= 2;
+                document.getElementById('editor').style.fontSize = fontSize + 'px';
+            } else {
+                alert('Minimum font size reached.');
+            }
+        }
+
+        // Handle image upload
+        function handleImageUpload(event) {
+            const files = event.target.files;
+            const editor = document.getElementById('editor');
+
+            if (files.length > 0) {
+                Array.from(files).forEach(file => {
+                    const reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.alt = file.name;
+                        img.style.width = '300px'; // Default width
+                        img.style.cursor = 'pointer';
+                        editor.appendChild(img);
+                    };
+
+                    reader.readAsDataURL(file);
+                });
+            }
+        }
+
+        // Select an image by clicking on it
+        function selectImage(event) {
+            if (event.target.tagName === 'IMG') {
+                if (selectedImage) {
+                    selectedImage.classList.remove('selected');
+                }
+                selectedImage = event.target;
+                selectedImage.classList.add('selected');
+            } else if (selectedImage) {
+                selectedImage.classList.remove('selected');
+                selectedImage = null;
+            }
+        }
+
+        // Resize the selected image
+        function resizeImage(action) {
+            if (!selectedImage) {
+                alert('Please select an image to resize.');
+                return;
+            }
+
+            const currentWidth = selectedImage.clientWidth;
+
+            if (action === 'increase') {
+                selectedImage.style.width = currentWidth + 20 + 'px';
+            } else if (action === 'decrease') {
+                const newWidth = currentWidth - 20;
+                if (newWidth > 50) { // Set a minimum width
+                    selectedImage.style.width = newWidth + 'px';
+                } else {
+                    alert('Minimum image size reached.');
+                }
+            }
+        }
+
+        // Save the blog content to local storage in JSON format
+        function postBlog() {
+            const editorContent = document.getElementById('editor').innerHTML;
+
+            // Validate the content
+            if (!editorContent.trim()) {
+                alert("Blog content cannot be empty!");
+                return;
+            }
+
+            // Create a unique blog post ID
+            const blogPost = {
+                id: Date.now(),
+                content: editorContent
+            };
+
+            // Retrieve existing blogs from local storage or initialize an empty array
+            const existingBlogs = JSON.parse(localStorage.getItem('blogs')) || [];
+            existingBlogs.push(blogPost);
+
+            // Save the updated blog array to local storage
+            localStorage.setItem('blogs', JSON.stringify(existingBlogs));
+
+            alert("Blog post saved successfully!");
+            document.getElementById('editor').innerHTML = "Start typing here..."; // Reset the editor
+        }
+    </script>
 </body>
+
 </html>
