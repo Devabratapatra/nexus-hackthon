@@ -88,11 +88,6 @@ We welcome your ideas and contributions to make this platform even better! Here'
 
 ---
 
-## 📜 License
-This project is licensed under the **MIT License**. See the `LICENSE` file for details.
-
----
-
 ## 📧 Contact
 For feedback or inquiries, feel free to reach out:
 - **Email**: [support@bloggingplatform.com](mailto:ndaashupatra@gmail.com)
