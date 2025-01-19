@@ -326,6 +326,9 @@ body {
     font-size: 18px !important;
    }
    
+   .fab-btn{
+    font-size: 17px;
+   }
 
     .hero-area img{
         padding-left: 0 !important;
