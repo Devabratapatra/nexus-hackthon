@@ -184,7 +184,7 @@
             }
         }
     </style>
-    <!-- Add Font Awesome for Icons -->
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
@@ -201,10 +201,10 @@
                 <li><a style="text-decoration: none; color: white;" href="#">contact-us</a></li>
             </ol>
         </nav>
-        <!-- Menu -->
+
         <button class="hamburger" onclick="toggleSidebar()">☰</button>
 
-        <!-- Sidebar -->
+
         <div class="sidebar" id="sidebar">
             <button onclick="formatText('bold')">Bold</button>
             <button onclick="formatText('italic')">Italic</button>
@@ -226,7 +226,7 @@
             <div id="editor" class="editor" contenteditable="true" onclick="selectImage(event)">
                 Start typing here...
             </div>
-       
+
             <button class="post-blog-button" onclick="postBlog()">
                 <i class="fas fa-paper-plane"></i>
             </button>
@@ -235,8 +235,8 @@
 
     <script>
         let fontSize = 16;
-        const maxFontSize = 36; 
-        const minFontSize = 10; 
+        const maxFontSize = 36;
+        const minFontSize = 10;
         let selectedImage = null;
 
         const sidebar = document.getElementById('sidebar');
@@ -247,7 +247,7 @@
             content.classList.toggle('collapsed');
         }
 
-        
+
         function formatText(command) {
             document.execCommand(command, false, null);
         }
@@ -274,7 +274,7 @@
             }
         }
 
-        
+
         function handleImageUpload(event) {
             const files = event.target.files;
             const editor = document.getElementById('editor');
@@ -286,7 +286,7 @@
                     reader.onload = function (e) {
                         const img = document.createElement('img');
                         img.src = e.target.result;
-                            img.alt = file.name;
+                        img.alt = file.name;
                         img.style.width = '300px';
                         img.style.cursor = 'pointer';
                         editor.appendChild(img);
@@ -311,7 +311,7 @@
             }
         }
 
-        // Resize the selected image
+
         function resizeImage(action) {
             if (!selectedImage) {
                 alert('Please select an image to resize.');
@@ -324,7 +324,7 @@
                 selectedImage.style.width = currentWidth + 20 + 'px';
             } else if (action === 'decrease') {
                 const newWidth = currentWidth - 20;
-                if (newWidth > 50) { 
+                if (newWidth > 50) {
                     selectedImage.style.width = newWidth + 'px';
                 } else {
                     alert('Minimum image size reached.');
@@ -332,17 +332,17 @@
             }
         }
 
-        // Save blog
+
         function postBlog() {
             const editorContent = document.getElementById('editor').innerHTML;
 
-            
+
             if (!editorContent.trim()) {
                 alert("Blog content cannot be empty!");
                 return;
             }
 
-            
+
             const blogPost = {
                 id: Date.now(),
                 content: editorContent
@@ -351,10 +351,10 @@
             const existingBlogs = JSON.parse(localStorage.getItem('blogs')) || [];
             existingBlogs.push(blogPost);
 
-                        localStorage.setItem('blogs', JSON.stringify(existingBlogs));
+            localStorage.setItem('blogs', JSON.stringify(existingBlogs));
 
             alert("Blog post saved successfully!");
-            document.getElementById('editor').innerHTML = "Start typing here..."; 
+            document.getElementById('editor').innerHTML = "Start typing here...";
         }
     </script>
 </body>
