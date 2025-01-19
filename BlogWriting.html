@@ -201,7 +201,7 @@
                 <li><a style="text-decoration: none; color: white;" href="#">contact-us</a></li>
             </ol>
         </nav>
-        <!-- Hamburger Menu -->
+        <!-- Menu -->
         <button class="hamburger" onclick="toggleSidebar()">☰</button>
 
         <!-- Sidebar -->
@@ -221,13 +221,12 @@
             <button onclick="resizeImage('decrease')">Decrease Image Size</button>
         </div>
 
-        <!-- Content Area -->
         <div class="content" id="content">
 
             <div id="editor" class="editor" contenteditable="true" onclick="selectImage(event)">
                 Start typing here...
             </div>
-            <!-- Post Blog Button -->
+       
             <button class="post-blog-button" onclick="postBlog()">
                 <i class="fas fa-paper-plane"></i>
             </button>
@@ -235,21 +234,20 @@
     </div>
 
     <script>
-        let fontSize = 16; // Default font size
-        const maxFontSize = 36; // Maximum font size
-        const minFontSize = 10; // Minimum font size
-        let selectedImage = null; // Track the currently selected image
+        let fontSize = 16;
+        const maxFontSize = 36; 
+        const minFontSize = 10; 
+        let selectedImage = null;
 
         const sidebar = document.getElementById('sidebar');
         const content = document.getElementById('content');
 
-        // Toggle Sidebar for Responsive Design
         function toggleSidebar() {
             sidebar.classList.toggle('open');
             content.classList.toggle('collapsed');
         }
 
-        // Functions for text formatting
+        
         function formatText(command) {
             document.execCommand(command, false, null);
         }
@@ -276,7 +274,7 @@
             }
         }
 
-        // Handle image upload
+        
         function handleImageUpload(event) {
             const files = event.target.files;
             const editor = document.getElementById('editor');
@@ -288,8 +286,8 @@
                     reader.onload = function (e) {
                         const img = document.createElement('img');
                         img.src = e.target.result;
-                        img.alt = file.name;
-                        img.style.width = '300px'; // Default width
+                            img.alt = file.name;
+                        img.style.width = '300px';
                         img.style.cursor = 'pointer';
                         editor.appendChild(img);
                     };
@@ -299,7 +297,7 @@
             }
         }
 
-        // Select an image by clicking on it
+
         function selectImage(event) {
             if (event.target.tagName === 'IMG') {
                 if (selectedImage) {
@@ -326,7 +324,7 @@
                 selectedImage.style.width = currentWidth + 20 + 'px';
             } else if (action === 'decrease') {
                 const newWidth = currentWidth - 20;
-                if (newWidth > 50) { // Set a minimum width
+                if (newWidth > 50) { 
                     selectedImage.style.width = newWidth + 'px';
                 } else {
                     alert('Minimum image size reached.');
@@ -334,31 +332,29 @@
             }
         }
 
-        // Save the blog content to local storage in JSON format
+        // Save blog
         function postBlog() {
             const editorContent = document.getElementById('editor').innerHTML;
 
-            // Validate the content
+            
             if (!editorContent.trim()) {
                 alert("Blog content cannot be empty!");
                 return;
             }
 
-            // Create a unique blog post ID
+            
             const blogPost = {
                 id: Date.now(),
                 content: editorContent
             };
 
-            // Retrieve existing blogs from local storage or initialize an empty array
             const existingBlogs = JSON.parse(localStorage.getItem('blogs')) || [];
             existingBlogs.push(blogPost);
 
-            // Save the updated blog array to local storage
-            localStorage.setItem('blogs', JSON.stringify(existingBlogs));
+                        localStorage.setItem('blogs', JSON.stringify(existingBlogs));
 
             alert("Blog post saved successfully!");
-            document.getElementById('editor').innerHTML = "Start typing here..."; // Reset the editor
+            document.getElementById('editor').innerHTML = "Start typing here..."; 
         }
     </script>
 </body>

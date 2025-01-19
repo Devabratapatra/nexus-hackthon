@@ -37,7 +37,7 @@
         }
 
         .container {
-            margin-top: 20px;
+            padding: 20px;
         }
 
         h1 {
@@ -46,23 +46,64 @@
             color: #2c3e50;
         }
 
-        .blog {
-            background-color: white;
-            border: 1px solid #ccc;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 5px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        .blogs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
         }
 
-        .blog h3 {
+        .blog-card {
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .blog-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .blog-card-content {
+            flex-grow: 1;
+            padding: 15px;
+        }
+
+        .blog-card h3 {
+            font-size: 18px;
             margin-bottom: 10px;
             color: #2c3e50;
         }
 
-        .blog .content {
-            font-size: 16px;
+        .blog-card p {
+            font-size: 14px;
             color: #444;
+            margin-bottom: 15px;
+        }
+
+        .blog-card-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-top: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+
+        .blog-card-buttons button {
+            border: none;
+            background-color: transparent;
+            cursor: pointer;
+            font-size: 16px;
+            color: #2c3e50;
+        }
+
+        .blog-card-buttons button:hover {
+            color: #1abc9c;
         }
 
         .no-blogs {
@@ -71,23 +112,14 @@
             color: #888;
         }
 
-        .back-button {
-            display: block;
-            margin: 20px auto;
-            text-align: center;
-            padding: 10px 20px;
-            background-color: #1abc9c;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            width: 200px;
-            text-align: center;
-        }
-
-        .back-button:hover {
-            background-color: #16a085;
+        @media screen and (min-width: 1024px) {
+            .blogs-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
         }
     </style>
+    <!-- Add Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <!-- Navbar -->
@@ -99,30 +131,89 @@
     <!-- Main Content -->
     <div class="container">
         <h1>Your Saved Blogs</h1>
-        <div id="blogs-container"></div>
-        <a href="index.html" class="back-button">Create New Blog</a>
+        <div id="blogs-container" class="blogs-grid"></div>
     </div>
 
     <script>
+        // Temporary blogs for demo
+        const tempBlogs = [
+            {
+                id: 1,
+                content: "This is a temporary blog with an example image and some content.",
+                image: "https://via.placeholder.com/300x150",
+            },
+            {
+                id: 2,
+                content: "Another example blog. No image, but useful for testing display.",
+                image: null,
+            },
+            {
+                id: 3,
+                content: "Here is the third blog. It's a great example for showcasing cards.",
+                image: "https://via.placeholder.com/300x150",
+            },
+            {
+                id: 4,
+                content: "This is the fourth temporary blog with some interesting content.",
+                image: null,
+            },
+        ];
+
         // Load Blogs from Local Storage
         function loadBlogs() {
-            const blogs = JSON.parse(localStorage.getItem('blogs')) || [];
+            const blogs = JSON.parse(localStorage.getItem('blogs')) || tempBlogs; // Merge temp blogs
             const container = document.getElementById('blogs-container');
 
             if (blogs.length === 0) {
-                container.innerHTML = '<p class="no-blogs">No blogs found. Create one by clicking the button below!</p>';
+                container.innerHTML = '<p class="no-blogs">No blogs found. Create one by clicking the editor button above!</p>';
                 return;
             }
 
             blogs.forEach(blog => {
-                const blogDiv = document.createElement('div');
-                blogDiv.classList.add('blog');
-                blogDiv.innerHTML = `
-                    <h3>Blog ID: ${blog.id}</h3>
-                    <div class="content">${blog.content}</div>
+                const blogCard = document.createElement('div');
+                blogCard.classList.add('blog-card');
+
+                blogCard.innerHTML = `
+                    <img src="${blog.image || 'https://via.placeholder.com/300x150'}" alt="Blog Image">
+                    <div class="blog-card-content">
+                        <h3>Blog ID: ${blog.id}</h3>
+                        <p>${getFirstWords(blog.content, 5)}...</p>
+                    </div>
+                    <div class="blog-card-buttons">
+                        <button onclick="openBlog(${blog.id})"><i class="fas fa-folder-open"></i> Open</button>
+                        <button onclick="deleteBlog(${blog.id})"><i class="fas fa-trash"></i> Delete</button>
+                    </div>
                 `;
-                container.appendChild(blogDiv);
+                container.appendChild(blogCard);
             });
+        }
+
+        // Function to get first N words
+        function getFirstWords(content, numWords) {
+            return content.split(" ").slice(0, numWords).join(" ");
+        }
+
+        // Open Blog (Alert Content for Now)
+        function openBlog(id) {
+            const blogs = JSON.parse(localStorage.getItem('blogs')) || tempBlogs;
+            const blog = blogs.find(blog => blog.id === id);
+
+            if (blog) {
+                alert(`Blog Content:\n\n${blog.content}`);
+            } else {
+                alert("Blog not found!");
+            }
+        }
+
+        // Delete Blog
+        function deleteBlog(id) {
+            let blogs = JSON.parse(localStorage.getItem('blogs')) || tempBlogs;
+
+            blogs = blogs.filter(blog => blog.id !== id);
+
+            localStorage.setItem('blogs', JSON.stringify(blogs));
+            alert("Blog deleted successfully!");
+            location.reload(); // Refresh the page
         }
 
         // Call the function on page load
