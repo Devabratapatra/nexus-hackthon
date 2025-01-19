@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -54,12 +55,16 @@
 
         .blog-card {
             background-color: white;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
         }
 
         .blog-card img {
@@ -69,20 +74,20 @@
         }
 
         .blog-card-content {
-            flex-grow: 1;
             padding: 15px;
         }
 
         .blog-card h3 {
-            font-size: 18px;
+            font-size: 20px;
             margin-bottom: 10px;
             color: #2c3e50;
         }
 
         .blog-card p {
             font-size: 14px;
-            color: #444;
-            margin-bottom: 15px;
+            color: #555;
+            margin-bottom: 10px;
+            line-height: 1.6;
         }
 
         .blog-card-buttons {
@@ -90,82 +95,86 @@
             justify-content: space-between;
             align-items: center;
             padding: 10px;
-            border-top: 1px solid #ccc;
+            border-top: 1px solid #ddd;
             background-color: #f9f9f9;
         }
 
         .blog-card-buttons button {
             border: none;
-            background-color: transparent;
+            background-color: #2c3e50;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
-            color: #2c3e50;
+            font-size: 14px;
+            transition: background-color 0.3s;
         }
 
         .blog-card-buttons button:hover {
-            color: #1abc9c;
+            background-color: #1abc9c;
         }
 
         .no-blogs {
             text-align: center;
             font-size: 18px;
             color: #888;
+            margin-top: 50px;
         }
 
-        @media screen and (min-width: 1024px) {
-            .blogs-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
+        .no-blogs img {
+            width: 100%;
+            max-width: 400px;
+            margin: 20px auto;
+        }
+
+        .no-blogs p {
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        .no-blogs button {
+            padding: 10px 20px;
+            background-color: #1abc9c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .no-blogs button:hover {
+            background-color: #16a085;
         }
     </style>
-    <!-- Add Font Awesome for Icons -->
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body>
-    <!-- Navbar -->
     <div class="navbar">
         <h2>My Blogs</h2>
         <a href="index.html">Back to Editor</a>
     </div>
 
-    <!-- Main Content -->
     <div class="container">
         <h1>Your Saved Blogs</h1>
         <div id="blogs-container" class="blogs-grid"></div>
     </div>
 
     <script>
-        // Temporary blogs for demo
-        const tempBlogs = [
-            {
-                id: 1,
-                content: "This is a temporary blog with an example image and some content.",
-                image: "https://via.placeholder.com/300x150",
-            },
-            {
-                id: 2,
-                content: "Another example blog. No image, but useful for testing display.",
-                image: null,
-            },
-            {
-                id: 3,
-                content: "Here is the third blog. It's a great example for showcasing cards.",
-                image: "https://via.placeholder.com/300x150",
-            },
-            {
-                id: 4,
-                content: "This is the fourth temporary blog with some interesting content.",
-                image: null,
-            },
-        ];
-
-        // Load Blogs from Local Storage
         function loadBlogs() {
-            const blogs = JSON.parse(localStorage.getItem('blogs')) || tempBlogs; // Merge temp blogs
+            const blogs = JSON.parse(localStorage.getItem('blogs')) || [];
             const container = document.getElementById('blogs-container');
 
             if (blogs.length === 0) {
-                container.innerHTML = '<p class="no-blogs">No blogs found. Create one by clicking the editor button above!</p>';
+                container.innerHTML = `
+                    <div class="no-blogs">
+                        <img src="/assets/images/rb_127818.png" alt="No Blogs Illustration">
+                        <p>You have no saved blogs.</p>
+                        <p>Click the button below to create your first blog post!</p>
+                        <button onclick="location.href='index.html'">Go to Editor</button>
+                    </div>
+                `;
                 return;
             }
 
@@ -173,11 +182,13 @@
                 const blogCard = document.createElement('div');
                 blogCard.classList.add('blog-card');
 
+                const imageSrc = blog.content.match(/<img.*?src="(.*?)"/)?.[1] || 'https://via.placeholder.com/300x150';
+
                 blogCard.innerHTML = `
-                    <img src="${blog.image || 'https://via.placeholder.com/300x150'}" alt="Blog Image">
+                    <img src="${imageSrc}" alt="Blog Image">
                     <div class="blog-card-content">
-                        <h3>Blog ID: ${blog.id}</h3>
-                        <p>${getFirstWords(blog.content, 5)}...</p>
+                        <h3>Blog Title: ${blog.title || 'Untitled'}</h3>
+                        <p>${getFirstWords(blog.content.replace(/<[^>]*>?/gm, ''), 20)}...</p>
                     </div>
                     <div class="blog-card-buttons">
                         <button onclick="openBlog(${blog.id})"><i class="fas fa-folder-open"></i> Open</button>
@@ -188,14 +199,12 @@
             });
         }
 
-        // Function to get first N words
         function getFirstWords(content, numWords) {
             return content.split(" ").slice(0, numWords).join(" ");
         }
 
-        // Open Blog (Alert Content for Now)
         function openBlog(id) {
-            const blogs = JSON.parse(localStorage.getItem('blogs')) || tempBlogs;
+            const blogs = JSON.parse(localStorage.getItem('blogs')) || [];
             const blog = blogs.find(blog => blog.id === id);
 
             if (blog) {
@@ -205,19 +214,18 @@
             }
         }
 
-        // Delete Blog
         function deleteBlog(id) {
-            let blogs = JSON.parse(localStorage.getItem('blogs')) || tempBlogs;
+            let blogs = JSON.parse(localStorage.getItem('blogs')) || [];
 
             blogs = blogs.filter(blog => blog.id !== id);
 
             localStorage.setItem('blogs', JSON.stringify(blogs));
             alert("Blog deleted successfully!");
-            location.reload(); // Refresh the page
+            location.reload();
         }
 
-        // Call the function on page load
         loadBlogs();
     </script>
 </body>
+
 </html>
