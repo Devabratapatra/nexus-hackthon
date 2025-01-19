@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@600&display=swap');
 
-/* General Styles */
 * {
     margin: 0;
     padding: 0;
@@ -34,7 +33,7 @@ body {
     border-radius: 10px;
 }
 
-/* Showcase Section */
+
 .showcase {
     position: relative;
     height: 100vh;
@@ -97,7 +96,7 @@ body {
     font-size: 1.1rem;
 }
 
-/* Hamburger Menu and Close Button */
+
 #menu-toggle {
     display: none;
     font-size: 2rem;
@@ -113,7 +112,7 @@ body {
     margin-bottom: 2rem;
 }
 
-/* Mobile Styles */
+
 
 /* Shape Styles */
 .shape {
@@ -303,6 +302,11 @@ body {
     
     
     
+    .main-section{
+        height: 100vh;
+         width: 100%;
+    }
+    
     .hero-area{
         display: flex;
         flex-direction: column;
@@ -311,13 +315,17 @@ body {
         padding-top: 80px !important;
         max-width: 100%;
     }
-    .hero-area h1{
+    .hero2 h1{
+        font-size: 50px !important;
         padding-left: 0 !important;
         padding-top: 0 !important;
         padding-bottom: 0 !important;
         padding-right: 0 !important;
-        
     }
+   .hero2 p {
+    font-size: 18px !important;
+   }
+   
 
     .hero-area img{
         padding-left: 0 !important;
